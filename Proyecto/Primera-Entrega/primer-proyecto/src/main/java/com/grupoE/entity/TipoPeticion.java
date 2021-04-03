@@ -1,6 +1,6 @@
-package com.grupoE;
+package com.grupoE.entity;
 
-public enum TipoPS {
+public enum TipoPeticion {
     
     Devolver(1),
     Renovar(2),
@@ -8,7 +8,7 @@ public enum TipoPS {
     
     private int numSolicitud; 
 
-    private TipoPS(int numSolicitud) {
+    private TipoPeticion(int numSolicitud) {
         this.numSolicitud = numSolicitud;
     }
     public int getNumSolicitud() {

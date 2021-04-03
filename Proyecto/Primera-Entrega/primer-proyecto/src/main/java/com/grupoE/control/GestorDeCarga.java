@@ -1,19 +1,33 @@
-package com.grupoE;
+package com.grupoE.control;
 
 import java.nio.charset.StandardCharsets;
+
 
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMsg;
 
 public class GestorDeCarga {
+    private ZContext context;
     private ZMQ.Socket server;
-    public static void main(String[] args) {
-        try(ZContext context = new ZContext()){
-            ZMQ.Socket server = context.createSocket(SocketType.REP);
+
+    public GestorDeCarga(){
+        try{
+            context = new ZContext();
+            server = context.createSocket(SocketType.REP);
             int port = 5556;
             server.bind("tcp://*:"+port);
+            
+        } catch (Exception e){
+            System.err.println("No se pudo inicializar el servidor");
+        }
+    }
+    public static void main(String[] args) {
+        GestorDeCarga gc = new GestorDeCarga();
+        gc.leerProcesosSolicitantes();
+    }
+    private void leerProcesosSolicitantes(){
+        try{
             while(!Thread.currentThread().isInterrupted()){
                 byte[] message = server.recv();
                 String decodeMessage = new String(message, StandardCharsets.UTF_8);
@@ -21,8 +35,9 @@ public class GestorDeCarga {
                 Thread.sleep(1000);
                 server.send("world");
             }
+    
         } catch (Exception e){
-            System.err.println("No se pudo inicializar el servidor");
+            System.err.println("No se pudo recibir el mensaje");
         }
     }
 }
