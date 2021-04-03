@@ -3,7 +3,7 @@ package com.grupoE.control;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +24,9 @@ public class ProcesoSolicitante {
             context= new ZContext();
             client = context.createSocket(SocketType.REQ);
             int port = 5556;
-            client.connect("tcp://localhost:" + port);
+            client.connect("tcp://25.93.151.39:" + port);
         } catch (Exception e) {
-            System.err.println("No se pudo conectar al servidor");
+            System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
         }
     }
     public static void main(String[] args) {
@@ -36,15 +36,29 @@ public class ProcesoSolicitante {
     }
 
     public void enviarPeticiones(){
-        client.send("Hello");
-        byte[] message = client.recv();
-        String decodeMessage = new String(message, StandardCharsets.UTF_8);
-        System.out.println(decodeMessage);
-        System.out.println(leerPeticiones());
+        List<Peticion> peticiones = new ArrayList<>();
+        peticiones = leerPeticiones();
+        try{
+            for (Peticion peticion : peticiones) {
+                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy");
+                String date = peticion.getFecha().format(dateFormat).toString();
+                String msgSend = String.format("%s %s %s",peticion.getIdLibro(), peticion.getTipo().getNumSolicitud(), date);
+                client.send(msgSend);
+                Thread.sleep(1000);
+                String message = client.recvStr(0).trim();
+                System.out.println(message);
+            }
+        } catch (Exception e ){
+            System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
+        }
+        
+        
     }
 
     public List<Peticion> leerPeticiones(){
-        String PATH_CSV = "/home/andres/Documentos/U/Introduccion-Sistemas-Distribuidos/Proyecto/Primera-Entrega/primer-proyecto/peticiones.csv";
+        String actual = System.getProperty("user.dir");
+        //String PATH_CSV = actual+"/src/main/java/com/grupoE/peticiones/peticiones.csv";
+        String PATH_CSV = actual+"/src/main/java/com/grupoE/peticiones/peticiones_2.csv";
         String line = "";
         List<Peticion> peticiones = new ArrayList<>();
         try{
@@ -52,7 +66,7 @@ public class ProcesoSolicitante {
             while((line = br.readLine()) != null){
                 String[] peticionR = line.split(",");
                 Peticion p = new Peticion();
-                TipoPeticion tipo = buscarPeticion(Integer.parseInt(peticionR[0]));
+                TipoPeticion tipo = p.buscarPeticion(Integer.parseInt(peticionR[0]));
                 if(tipo!=null){
                     p.setTipo(tipo);
                     p.setIdLibro(Integer.parseInt(peticionR[1].substring(1)));
@@ -60,21 +74,8 @@ public class ProcesoSolicitante {
                 }
             }
         }catch(IOException e){
-            System.err.println("No se pudo leer el archivo :(");
+            System.err.println("No se pudo leer el archivo :(" + "\n" + e.getMessage());
         }
         return peticiones;
-    }
-
-    public TipoPeticion buscarPeticion(int valor){
-        switch(valor){
-            case 1:
-                return TipoPeticion.Devolver;
-            case 2:
-                return TipoPeticion.Renovar;
-            case 3:
-                return TipoPeticion.Solicitar;
-            default:
-                return null;
-        }
     }
 }

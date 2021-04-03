@@ -12,6 +12,8 @@ public class Libro {
     private LocalDate fechaPublicacion;
     private String idioma;
     private String catogoria;
+    private boolean estado;
+    
     /**
      * @return String return the titulo
      */
@@ -128,6 +130,21 @@ public class Libro {
      */
     public void setIdLibro(int idLibro) {
         this.idLibro = idLibro;
+    }
+
+
+    /**
+     * @return boolean return the estado
+     */
+    public boolean isEstado() {
+        return estado;
+    }
+
+    /**
+     * @param estado the estado to set
+     */
+    public void setEstado(boolean estado) {
+        this.estado = estado;
     }
 
 }

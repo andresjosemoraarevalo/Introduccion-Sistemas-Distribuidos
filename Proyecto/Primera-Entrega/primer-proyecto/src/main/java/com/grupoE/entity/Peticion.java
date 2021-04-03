@@ -1,10 +1,23 @@
 package com.grupoE.entity;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class Peticion {
     
     private TipoPeticion tipo;
     private int idLibro;
+    private LocalDate fecha;
 
+    public Peticion(){
+        this.fecha = LocalDate.now();
+    }
+    public Peticion(int id, int tipo, String fecha){
+        this.idLibro = id;
+        this.tipo = this.buscarPeticion(tipo);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy");
+        this.fecha = LocalDate.parse(fecha, dateFormat);
+    }
     /**
      * @return TipoPeticion return the tipo
      */
@@ -36,6 +49,33 @@ public class Peticion {
     @Override
     public String toString(){
         return "ID: " + this.idLibro + "\t Tipo: " + this.tipo + "\n"; 
+    }
+
+    public TipoPeticion buscarPeticion(int valor){
+        switch(valor){
+            case 1:
+                return TipoPeticion.Devolver;
+            case 2:
+                return TipoPeticion.Renovar;
+            case 3:
+                return TipoPeticion.Solicitar;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * @return LocalDate return the fecha
+     */
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    /**
+     * @param fecha the fecha to set
+     */
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
 }
