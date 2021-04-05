@@ -27,6 +27,7 @@ public class GestorDeCarga {
             //server.bind("tcp://25.93.151.39:"+port);
         } catch (Exception e){
             System.err.println("No se pudo inicializar el servidor");
+            System.exit(-1);
         }
     }
     public static void main(String[] args) {
@@ -53,6 +54,7 @@ public class GestorDeCarga {
     
         } catch (Exception e){
             System.err.println("No se pudo recibir el mensaje" + e.getMessage());
+            System.exit(-1);
         }
     }
 

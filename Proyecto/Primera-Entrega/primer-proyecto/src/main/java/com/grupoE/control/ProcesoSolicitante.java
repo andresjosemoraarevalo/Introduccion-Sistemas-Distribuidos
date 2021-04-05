@@ -39,14 +39,20 @@ public class ProcesoSolicitante {
             int port = 5556;
             //Ata el socket a el puerto
             //Usando localhost
-            client.connect("tcp://+"+ direccion + ":" + port);
+            client.connect("tcp://"+ direccion + ":" + port);
             
             //client.connect("tcp://25.92.125.22:" + port);
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
+            System.exit(-1);
         }
     }
     public static void main(String[] args) {
+        if(args.length==0){
+            System.out.println("Ingrese: java [path] [sede]");
+            System.out.println("La sede puede ser A, B o la que desee (XXX.XXX.XXXX.XXXX)");
+            System.exit(-1);
+        }
         System.err.println("Conectando al servidor...");
         ProcesoSolicitante ps = new ProcesoSolicitante(args[0]);
         ps.enviarPeticiones();
@@ -69,6 +75,7 @@ public class ProcesoSolicitante {
             }
         } catch (Exception e ){
             System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
+            System.exit(-1);
         }
         
         
@@ -94,6 +101,7 @@ public class ProcesoSolicitante {
             }
         }catch(IOException e){
             System.err.println("No se pudo leer el archivo :(" + "\n" + e.getMessage());
+            System.exit(-1);
         }
         return peticiones;
     }
