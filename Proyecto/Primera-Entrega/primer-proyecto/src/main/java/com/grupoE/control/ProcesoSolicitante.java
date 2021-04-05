@@ -19,19 +19,36 @@ public class ProcesoSolicitante {
     private ZMQ.Socket client;
     private BufferedReader br;
 
-    public ProcesoSolicitante(){
+    public ProcesoSolicitante(String opcion){
         try{
+            String direccion;
+            switch(opcion){
+                case "A":
+                    //Usando Hamachi A
+                    direccion = "25.92.125.22";
+                case "B":
+                    //Usando Hamachi A
+                    direccion = "25.92.125.22";
+                default:
+                    direccion = opcion;
+            }
+            //Se establece un contexto ZeroMQ
             context= new ZContext();
+            //Crea socket tipo REQ
             client = context.createSocket(SocketType.REQ);
             int port = 5556;
-            client.connect("tcp://25.93.151.39:" + port);
+            //Ata el socket a el puerto
+            //Usando localhost
+            client.connect("tcp://+"+ direccion + ":" + port);
+            
+            //client.connect("tcp://25.92.125.22:" + port);
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
         }
     }
     public static void main(String[] args) {
         System.err.println("Conectando al servidor...");
-        ProcesoSolicitante ps = new ProcesoSolicitante();
+        ProcesoSolicitante ps = new ProcesoSolicitante(args[0]);
         ps.enviarPeticiones();
     }
 
@@ -43,8 +60,10 @@ public class ProcesoSolicitante {
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy");
                 String date = peticion.getFecha().format(dateFormat).toString();
                 String msgSend = String.format("%s %s %s",peticion.getIdLibro(), peticion.getTipo().getNumSolicitud(), date);
+                
                 client.send(msgSend);
                 Thread.sleep(1000);
+                
                 String message = client.recvStr(0).trim();
                 System.out.println(message);
             }

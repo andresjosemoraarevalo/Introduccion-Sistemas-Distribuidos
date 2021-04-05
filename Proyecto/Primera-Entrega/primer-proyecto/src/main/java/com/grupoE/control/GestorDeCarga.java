@@ -15,10 +15,16 @@ public class GestorDeCarga {
 
     public GestorDeCarga(){
         try{
+            //Se establece un contexto ZeroMQ
             context = new ZContext();
+            //Crea socket tipo REP
             server = context.createSocket(SocketType.REP);
             int port = 5556;
+            //Ata el socket a el puerto
+            //Usando el localhost
             server.bind("tcp://*:"+port);
+            //Usando hamachi
+            //server.bind("tcp://25.93.151.39:"+port);
         } catch (Exception e){
             System.err.println("No se pudo inicializar el servidor");
         }
@@ -36,9 +42,12 @@ public class GestorDeCarga {
                 int idLibro = Integer.parseInt(strTok.nextToken());
                 int tipo = Integer.parseInt(strTok.nextToken());
                 String fecha = strTok.nextToken();
+
                 Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
+
                 System.out.println(peticionAux.toString());
                 Thread.sleep(1000);
+                
                 server.send(this.procesarPeticion(peticionAux));
             }
     
