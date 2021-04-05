@@ -27,7 +27,7 @@ public class ProcesoSolicitante {
                     //Usando Hamachi A
                     direccion = "25.92.125.22";
                 case "B":
-                    //Usando Hamachi A
+                    //Usando Hamachi B
                     direccion = "25.92.125.22";
                 default:
                     direccion = opcion;
