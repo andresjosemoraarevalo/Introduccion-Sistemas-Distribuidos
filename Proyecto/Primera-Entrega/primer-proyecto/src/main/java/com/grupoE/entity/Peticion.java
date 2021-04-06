@@ -46,11 +46,19 @@ public class Peticion {
         this.idLibro = idLibro;
     }
 
+    /**
+     * Función para ver la clase libro de manera más estética
+     */
     @Override
     public String toString(){
         return "ID: " + this.idLibro + "\t Tipo: " + this.tipo + "\n"; 
     }
 
+    /**
+     * Función que dado el tipo de pertición en numero, retorna su valor de Enumerado
+     * @param valor
+     * @return enum TipoPeticion y null si no corr
+     */
     public TipoPeticion buscarPeticion(int valor){
         switch(valor){
             case 1:

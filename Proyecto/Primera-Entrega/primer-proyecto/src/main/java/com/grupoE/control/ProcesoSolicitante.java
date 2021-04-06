@@ -47,28 +47,36 @@ public class ProcesoSolicitante {
         }
     }
     public static void main(String[] args) {
-        if(args.length==0){
+        if(args.length==0){ // Verifica que se ingrese los argumentos correctos
             System.out.println("Ingrese: java [path] [sede]");
             System.out.println("La sede puede ser A, B o la que desee (XXX.XXX.XXXX.XXXX)");
             System.exit(-1);
         }
         System.out.println("Conectando al servidor...");
+        // Se crea el contexto, el socket y se ata a un puerto
         ProcesoSolicitante ps = new ProcesoSolicitante(args[0]);
+        // Envia las peticiones al servidor con el patrón requesr-reply 
         ps.enviarPeticiones();
     }
 
+    /** 
+     * Lee las peticiones del archivo "peticiones.csv" y las envía al Gestor de Carga
+    */
     public void enviarPeticiones(){
         List<Peticion> peticiones = new ArrayList<>();
-        peticiones = leerPeticiones();
+        peticiones = leerPeticiones();// Lee las peticiones del archivo
         try{
             for (Peticion peticion : peticiones) {
-                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy");
+                // Da formato a la fecha
+                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy"); 
+                // Obtiene la fecha de la petición y le da formato
                 String date = peticion.getFecha().format(dateFormat).toString();
+                // Arma el mensaje que se va a enviar
                 String msgSend = String.format("%s %s %s",peticion.getIdLibro(), peticion.getTipo().getNumSolicitud(), date);
-                
+                //Se envía el mensaje
                 client.send(msgSend);
                 Thread.sleep(1000);
-                
+                //Recibe la respuesta del gestor de carga
                 String message = client.recvStr(0).trim();
                 System.out.println(message);
             }
@@ -79,23 +87,31 @@ public class ProcesoSolicitante {
         
         
     }
-
+    
+    /**
+     * Función que retorna una lista de peticiones que son leídas de un archivo
+     * @return Lista de Peticiones dado un archivo .CSV
+     */
     public List<Peticion> leerPeticiones(){
         String actual = System.getProperty("user.dir");
-        //String PATH_CSV = actual+"/src/main/java/com/grupoE/peticiones/peticiones.csv";
-        String PATH_CSV = actual+"/src/main/java/com/grupoE/peticiones/peticiones_2.csv";
+        //SE DEBE CAMBIAR DEPENDIENDO SI ES WINDOWS O LINUX
+        // - PARA LINUX
+        //String PATH_CSV = actual+"/src/main/java/com/grupoE/peticiones/peticiones.csv"; // Si se va a leer peticiones
+        String PATH_CSV = actual+"/src/main/java/com/grupoE/peticiones/peticiones_2.csv"; // Si se va a leer peticiones 2
+        // - PARA WINDOWS
+        //PATH_CSV.replace('/', '\\'); // QUITAR COMENTARIO
         String line = "";
         List<Peticion> peticiones = new ArrayList<>();
         try{
-            br = new BufferedReader(new FileReader(PATH_CSV));
+            br = new BufferedReader(new FileReader(PATH_CSV));//se lee el archivo
             while((line = br.readLine()) != null){
-                String[] peticionR = line.split(",");
+                String[] peticionR = line.split(","); // Se separa la linea por comas
                 Peticion p = new Peticion();
-                TipoPeticion tipo = p.buscarPeticion(Integer.parseInt(peticionR[0]));
-                if(tipo!=null){
+                TipoPeticion tipo = p.buscarPeticion(Integer.parseInt(peticionR[0]));//dado un numero se busca que tipo de petición es 
+                if(tipo!=null){//si el tipo es correcto
                     p.setTipo(tipo);
-                    p.setIdLibro(Integer.parseInt(peticionR[1].substring(1)));
-                    peticiones.add(p);
+                    p.setIdLibro(Integer.parseInt(peticionR[1].substring(1)));//se obtiene de la linea el id del libro
+                    peticiones.add(p);// se añade a la lista
                 }
             }
         }catch(IOException e){

@@ -34,21 +34,29 @@ public class GestorDeCarga {
         GestorDeCarga gc = new GestorDeCarga();
         gc.leerProcesosSolicitantes();
     }
+
+    /**
+     * Función que recibe los request de los procesos solicitantes y les envía respuesta
+     */
     private void leerProcesosSolicitantes(){
         try{
             while(!Thread.currentThread().isInterrupted()){
-                String peticionStr = server.recvStr(0).trim();
-                //System.out.println(peticionStr);
+                // Recibe el request del proceso solicitante
+                String peticionStr = server.recvStr(0).trim(); 
+                // Separa la palabra por espacios
                 StringTokenizer strTok = new StringTokenizer(peticionStr, " ");
+                // Se obtiene el ID del libro
                 int idLibro = Integer.parseInt(strTok.nextToken());
+                // Se obtiene el tipo de proceso
                 int tipo = Integer.parseInt(strTok.nextToken());
+                // Se obtiene la fecha del proceso
                 String fecha = strTok.nextToken();
-
+                //Se arma la petición
                 Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
-
+                //Se muestra en consola para saber en cual petición va
                 System.out.println(peticionAux.toString());
                 Thread.sleep(1000);
-                
+                //Se procesa y se envía la petición hacia el proceso solicitante
                 server.send(this.procesarPeticion(peticionAux));
             }
     
@@ -57,7 +65,12 @@ public class GestorDeCarga {
             System.exit(-1);
         }
     }
-
+    
+    /**
+     * 
+     * @param p Peticion que recibe de el proceso solicitante
+     * @return mensaje de confirmación o de error que da respuesta a la peticion
+     */
     private String procesarPeticion(Peticion p){
         if(p.getTipo().getNumSolicitud() == 1){
             return "Devolucion exitosa";

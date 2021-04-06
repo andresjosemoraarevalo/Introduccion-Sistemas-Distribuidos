@@ -7,10 +7,11 @@ public enum TipoPeticion {
     Solicitar(3);
     
     private int numSolicitud; 
-
+    
     private TipoPeticion(int numSolicitud) {
         this.numSolicitud = numSolicitud;
     }
+
     public int getNumSolicitud() {
         return this.numSolicitud;
     }
