@@ -22,15 +22,14 @@ public class ProcesoSolicitante {
     public ProcesoSolicitante(String opcion){
         try{
             String direccion;
-            switch(opcion){
-                case "A":
-                    //Usando Hamachi A
-                    direccion = "25.92.125.22";
-                case "B":
-                    //Usando Hamachi B
-                    direccion = "25.92.125.22";
-                default:
-                    direccion = opcion;
+            if(opcion.equals("A")){
+                //Usando Hamachi A
+                direccion = "25.92.125.22";
+            }else if(opcion.equals("B")){
+                //Usando Hamachi B
+                direccion = "25.96.193.211";
+            }else{
+                direccion = opcion;
             }
             //Se establece un contexto ZeroMQ
             context= new ZContext();
@@ -53,7 +52,7 @@ public class ProcesoSolicitante {
             System.out.println("La sede puede ser A, B o la que desee (XXX.XXX.XXXX.XXXX)");
             System.exit(-1);
         }
-        System.err.println("Conectando al servidor...");
+        System.out.println("Conectando al servidor...");
         ProcesoSolicitante ps = new ProcesoSolicitante(args[0]);
         ps.enviarPeticiones();
     }
