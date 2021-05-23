@@ -3,7 +3,6 @@ package com.grupoE.entity;
 import java.time.*;
 
 public class Libro {
-
     private int idLibro;
     private String titulo;
     private String autor;
@@ -11,8 +10,9 @@ public class Libro {
     private String editorial;
     private LocalDate fechaPublicacion;
     private String idioma;
-    private String catogoria;
+    private String categoria;
     private boolean estado;
+    private int numEjemplares;
     
     /**
      * @return String return the titulo
@@ -104,17 +104,17 @@ public class Libro {
     }
 
     /**
-     * @return String return the catogoria
+     * @return String return the categoria
      */
-    public String getCatogoria() {
-        return catogoria;
+    public String getCategoria() {
+        return categoria;
     }
 
     /**
-     * @param catogoria the catogoria to set
+     * @param categoria the catogoria to set
      */
-    public void setCatogoria(String catogoria) {
-        this.catogoria = catogoria;
+    public void setCatogoria(String categoria) {
+        this.categoria = categoria;
     }
 
 
@@ -145,6 +145,28 @@ public class Libro {
      */
     public void setEstado(boolean estado) {
         this.estado = estado;
+    }
+
+
+    /**
+     * @param categoria the categoria to set
+     */
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    /**
+     * @return int return the numEjemplares
+     */
+    public int getNumEjemplares() {
+        return numEjemplares;
+    }
+
+    /**
+     * @param numEjemplares the numEjemplares to set
+     */
+    public void setNumEjemplares(int numEjemplares) {
+        this.numEjemplares = numEjemplares;
     }
 
 }

@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.grupoE.entity.TipoPeticion;
 import com.grupoE.entity.Peticion;
@@ -56,43 +54,37 @@ public class ProcesoSolicitante {
         // Se crea el contexto, el socket y se ata a un puerto
         ProcesoSolicitante ps = new ProcesoSolicitante(args[0]);
         // Envia las peticiones al servidor con el patrón requesr-reply 
-        ps.enviarPeticiones();
+        ps.leerPeticiones();// Lee las peticiones del archivo
     }
 
     /** 
      * Lee las peticiones del archivo "peticiones.csv" y las envía al Gestor de Carga
     */
-    public void enviarPeticiones(){
-        List<Peticion> peticiones = new ArrayList<>();
-        peticiones = leerPeticiones();// Lee las peticiones del archivo
+    public void enviarPeticiones(Peticion peticion){ 
         try{
-            for (Peticion peticion : peticiones) {
-                // Da formato a la fecha
-                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy"); 
-                // Obtiene la fecha de la petición y le da formato
-                String date = peticion.getFecha().format(dateFormat).toString();
-                // Arma el mensaje que se va a enviar
-                String msgSend = String.format("%s %s %s",peticion.getIdLibro(), peticion.getTipo().getNumSolicitud(), date);
-                //Se envía el mensaje
-                client.send(msgSend);
-                Thread.sleep(1000);
-                //Recibe la respuesta del gestor de carga
-                String message = client.recvStr(0).trim();
-                System.out.println(message);
-            }
+            // Da formato a la fecha
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy"); 
+            // Obtiene la fecha de la petición y le da formato
+            String date = peticion.getFecha().format(dateFormat).toString();
+            // Arma el mensaje que se va a enviar
+            String msgSend = String.format("%s %s %s",peticion.getIdLibro(), peticion.getTipo().getNumSolicitud(), date);
+            //Se envía el mensaje
+            client.send(msgSend);
+            Thread.sleep(1000);
+            //Recibe la respuesta del gestor de carga
+            String message = client.recvStr(0).trim();
+            System.out.println(message);
         } catch (Exception e ){
             System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
             System.exit(-1);
         }
-        
-        
     }
     
     /**
      * Función que retorna una lista de peticiones que son leídas de un archivo
      * @return Lista de Peticiones dado un archivo .CSV
      */
-    public List<Peticion> leerPeticiones(){
+    public void leerPeticiones(){
         String actual = System.getProperty("user.dir");
         //SE DEBE CAMBIAR DEPENDIENDO SI ES WINDOWS O LINUX
         // - PARA LINUX
@@ -101,7 +93,6 @@ public class ProcesoSolicitante {
         // - PARA WINDOWS
         //PATH_CSV.replace('/', '\\'); // QUITAR COMENTARIO
         String line = "";
-        List<Peticion> peticiones = new ArrayList<>();
         try{
             br = new BufferedReader(new FileReader(PATH_CSV));//se lee el archivo
             while((line = br.readLine()) != null){
@@ -111,13 +102,12 @@ public class ProcesoSolicitante {
                 if(tipo!=null){//si el tipo es correcto
                     p.setTipo(tipo);
                     p.setIdLibro(Integer.parseInt(peticionR[1].substring(1)));//se obtiene de la linea el id del libro
-                    peticiones.add(p);// se añade a la lista
+                    enviarPeticiones(p);
                 }
             }
         }catch(IOException e){
             System.err.println("No se pudo leer el archivo :(" + "\n" + e.getMessage());
             System.exit(-1);
         }
-        return peticiones;
     }
 }
