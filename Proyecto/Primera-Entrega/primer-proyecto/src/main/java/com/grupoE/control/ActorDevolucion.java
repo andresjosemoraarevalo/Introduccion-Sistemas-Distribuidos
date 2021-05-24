@@ -73,10 +73,11 @@ public class ActorDevolucion {
         }
         System.out.println("Conectando al servidor...");
         // Se crea el contexto, el socket y se ata a un puerto
+        ActorDevolucion ad;
         if(args.length==1){
-            ActorDevolucion ad = new ActorDevolucion(args[0],"");
+            ad = new ActorDevolucion(args[0],args[0]);
         }else{
-            ActorDevolucion ad = new ActorDevolucion(args[0],args[1]);
+            ad = new ActorDevolucion(args[0],args[1]);
         }        
         // Envia las peticiones al servidor con el patrón requesr-reply
         ad.leerDevoluciones();
