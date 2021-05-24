@@ -1,6 +1,7 @@
 package com.grupoE.control;
 
 import java.nio.charset.Charset;
+import java.time.format.DateTimeFormatter;
 import java.util.StringTokenizer;
 
 import com.grupoE.entity.Peticion;
@@ -12,18 +13,24 @@ import org.zeromq.ZMQ;
 public class ActorDevolucion {
     private ZContext context;
     private ZMQ.Socket client;
+    private ZMQ.Socket localPublisher;
+    private ZMQ.Socket publisher;
 
     public ActorDevolucion(String opcion){
         try{
             String direccion;
+            String direccionOpuesta;
             if(opcion.equals("A")){
                 //Usando Hamachi A
                 direccion = "25.92.125.22";
+                direccionOpuesta = "25.96.193.211";
             }else if(opcion.equals("B")){
                 //Usando Hamachi B
                 direccion = "25.96.193.211";
+                direccionOpuesta = "25.92.125.22";
             }else{
                 direccion = opcion;
+                direccionOpuesta = opcion;
             }
             //Se establece un contexto ZeroMQ
             context= new ZContext();
@@ -36,6 +43,23 @@ public class ActorDevolucion {
             String filter = "1";
             client.subscribe(filter.getBytes(Charset.forName("UTF-8")));
             //client.connect("tcp://25.92.125.22:" + port);
+
+            //Crea socket tipo PUB
+            publisher = context.createSocket(SocketType.PUB);
+            int portPUB = 8886;
+            //Ata el socket a el puerto
+            //Usando el localhost abre el puerto TCP para todas las interfaces disponibles
+            publisher.bind("tcp://"+ direccion + ":" + portPUB); 
+            //Usando hamachi
+            //publisher.bind("tcp://25.93.151.39:"+portPUB);
+
+            //Crea socket tipo PUB
+            localPublisher = context.createSocket(SocketType.PUB);
+            //Ata el socket a el puerto
+            //Usando el localhost abre el puerto TCP para todas las interfaces disponibles
+            localPublisher.bind("tcp://"+ direccionOpuesta + ":" + portPUB); 
+            //Usando hamachi
+            //publisher.bind("tcp://25.93.151.39:"+portPUB);
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
             System.exit(-1);
@@ -60,9 +84,7 @@ public class ActorDevolucion {
                 // Separa la palabra por espacios
                 StringTokenizer strTok = new StringTokenizer(peticionStr, " ");
                 //Se obtiene topico
-                System.out.println("Muero");
                 int topico =  Integer.parseInt(strTok.nextToken());
-                System.out.println("Muero");
                 if(topico == 1){
                     // Se obtiene el ID del libro
                     int idLibro = Integer.parseInt(strTok.nextToken());
@@ -74,11 +96,25 @@ public class ActorDevolucion {
                     Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
                     //Se muestra en consola para saber en cual petición va
                     System.out.println("Actor Devolucion"+peticionAux.toString());
+                    publicarRespuesta(peticionAux, tipo);
                 }
             }
         } catch (Exception e ){
             System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
             System.exit(-1);
         }
+    }
+    private void publicarRespuesta(Peticion peticion, int topico){
+        String msgSend = crearMensajePeticion(peticion);
+        publisher.send(topico + " " + msgSend);
+    }
+    private String crearMensajePeticion(Peticion peticion){
+        // Da formato a la fecha
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy"); 
+        // Obtiene la fecha de la petición y le da formato
+        String date = peticion.getFecha().format(dateFormat).toString();
+        // Arma el mensaje que se va a enviar
+        String msgSend = String.format("%s %s %s",peticion.getIdLibro(), peticion.getTipo().getNumSolicitud(),date);
+        return msgSend;
     }
 }
