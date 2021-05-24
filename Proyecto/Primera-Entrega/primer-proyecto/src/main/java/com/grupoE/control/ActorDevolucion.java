@@ -13,24 +13,19 @@ import org.zeromq.ZMQ;
 public class ActorDevolucion {
     private ZContext context;
     private ZMQ.Socket client;
-    private ZMQ.Socket localPublisher;
     private ZMQ.Socket publisher;
 
-    public ActorDevolucion(String opcion, String opcion2){
+    public ActorDevolucion(String opcion){
         try{
             String direccion;
-            String direccionOpuesta;
             if(opcion.equals("A")){
                 //Usando Hamachi A
                 direccion = "25.92.125.22";
-                direccionOpuesta = "25.96.193.211";
             }else if(opcion.equals("B")){
                 //Usando Hamachi B
                 direccion = "25.96.193.211";
-                direccionOpuesta = "25.92.125.22";
             }else{
                 direccion = opcion;
-                direccionOpuesta = opcion2;
             }
             //Se establece un contexto ZeroMQ
             context= new ZContext();
@@ -49,10 +44,11 @@ public class ActorDevolucion {
             int portPUB = 8886;
             //Ata el socket a el puerto
             //Usando el localhost abre el puerto TCP para todas las interfaces disponibles
-            publisher.bind("tcp://"+ direccion + ":" + portPUB); 
+            publisher.bind("tcp://*:" + portPUB); 
             //Usando hamachi
             //publisher.bind("tcp://25.93.151.39:"+portPUB);
 
+            /*
             //Crea socket tipo PUB
             localPublisher = context.createSocket(SocketType.PUB);
             //Ata el socket a el puerto
@@ -60,6 +56,7 @@ public class ActorDevolucion {
             localPublisher.bind("tcp://"+ direccionOpuesta + ":" + portPUB); 
             //Usando hamachi
             //publisher.bind("tcp://25.93.151.39:"+portPUB);
+            */
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
             System.exit(-1);
@@ -73,12 +70,7 @@ public class ActorDevolucion {
         }
         System.out.println("Conectando al servidor...");
         // Se crea el contexto, el socket y se ata a un puerto
-        ActorDevolucion ad;
-        if(args.length==1){
-            ad = new ActorDevolucion(args[0],args[0]);
-        }else{
-            ad = new ActorDevolucion(args[0],args[1]);
-        }        
+        ActorDevolucion ad = new ActorDevolucion(args[0]);
         // Envia las peticiones al servidor con el patrón requesr-reply
         ad.leerDevoluciones();
     }

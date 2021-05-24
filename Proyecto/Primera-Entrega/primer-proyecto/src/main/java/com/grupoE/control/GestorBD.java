@@ -1,5 +1,6 @@
 package com.grupoE.control;
 
+import java.nio.charset.Charset;
 import java.util.StringTokenizer;
 
 import com.grupoE.entity.Peticion;
@@ -24,6 +25,8 @@ public class GestorBD {
             //Usando localhost
             client.connect("tcp://*:" + port);
             //client.connect("tcp://25.92.125.22:" + port);
+            String filter = "1";
+            client.subscribe(filter.getBytes(Charset.forName("UTF-8")));
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
             System.exit(-1);
