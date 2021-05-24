@@ -43,7 +43,7 @@ public class GestorBD {
                 // Separa la palabra por espacios
                 StringTokenizer strTok = new StringTokenizer(peticionStr, " ");
                 //Se obtiene topico
-                int topico =  Integer.parseInt(strTok.nextToken());
+                Integer.parseInt(strTok.nextToken());
                 // Se obtiene el ID del libro
                 int idLibro = Integer.parseInt(strTok.nextToken());
                 // Se obtiene el tipo de proceso

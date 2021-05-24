@@ -16,7 +16,7 @@ public class ActorDevolucion {
     private ZMQ.Socket localPublisher;
     private ZMQ.Socket publisher;
 
-    public ActorDevolucion(String opcion){
+    public ActorDevolucion(String opcion, String opcion2){
         try{
             String direccion;
             String direccionOpuesta;
@@ -30,7 +30,7 @@ public class ActorDevolucion {
                 direccionOpuesta = "25.92.125.22";
             }else{
                 direccion = opcion;
-                direccionOpuesta = opcion;
+                direccionOpuesta = opcion2;
             }
             //Se establece un contexto ZeroMQ
             context= new ZContext();
@@ -73,7 +73,11 @@ public class ActorDevolucion {
         }
         System.out.println("Conectando al servidor...");
         // Se crea el contexto, el socket y se ata a un puerto
-        ActorDevolucion ad = new ActorDevolucion(args[0]);
+        if(args.length==1){
+            ActorDevolucion ad = new ActorDevolucion(args[0],"");
+        }else{
+            ActorDevolucion ad = new ActorDevolucion(args[0],args[1]);
+        }        
         // Envia las peticiones al servidor con el patrón requesr-reply
         ad.leerDevoluciones();
     }
