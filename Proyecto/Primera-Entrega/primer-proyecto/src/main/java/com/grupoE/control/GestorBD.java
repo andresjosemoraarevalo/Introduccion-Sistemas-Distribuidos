@@ -23,7 +23,7 @@ public class GestorBD {
             int port = 8886;
             //Ata el socket a el puerto
             //Usando localhost
-            client.connect("tcp://*:" + port);
+            client.connect("tcp://25.92.125.22:" + port);
             //client.connect("tcp://25.92.125.22:" + port);
             String filter = "1";
             client.subscribe(filter.getBytes(Charset.forName("UTF-8")));
