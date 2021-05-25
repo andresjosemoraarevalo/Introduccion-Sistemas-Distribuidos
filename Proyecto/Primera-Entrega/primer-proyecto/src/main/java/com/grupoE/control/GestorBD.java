@@ -11,7 +11,9 @@ import org.zeromq.ZMQ;
 
 public class GestorBD {
     private ZContext context;
-    private ZMQ.Socket client;
+    private ZMQ.Socket client_dev;
+    private ZMQ.Socket client_pres;
+    private ZMQ.Socket client_rnv;
     
 
     public GestorBD(){
@@ -19,14 +21,33 @@ public class GestorBD {
             //Se establece un contexto ZeroMQ
             context= new ZContext();
             //Crea socket tipo SUB
-            client = context.createSocket(SocketType.SUB);
-            int port = 8886;
+            client_dev = context.createSocket(SocketType.SUB);
+            int portDEV = 8886;
             //Ata el socket a el puerto
             //Usando localhost
-            client.connect("tcp://25.92.125.22:" + port);
-            //client.connect("tcp://25.92.125.22:" + port);
+            client_dev.connect("tcp://*:" + portDEV);
+            //client_dev.connect("tcp://25.92.125.22:" + port);
             String filter = "1";
-            client.subscribe(filter.getBytes(Charset.forName("UTF-8")));
+            client_dev.subscribe(filter.getBytes(Charset.forName("UTF-8")));
+
+            //Crea socket tipo SUB
+            client_pres = context.createSocket(SocketType.SUB);
+            int portPRES = 9996;
+            //Ata el socket a el puerto
+            //Usando localhost
+            client_pres.connect("tcp://*:" + portPRES);
+            //client_pres.connect("tcp://25.92.125.22:" + port);
+            client_pres.subscribe(filter.getBytes(Charset.forName("UTF-8")));
+        
+            //Crea socket tipo SUB
+            client_rnv = context.createSocket(SocketType.SUB);
+            int portRNV = 9886;
+            //Ata el socket a el puerto
+            //Usando localhost
+            client_rnv.connect("tcp://*:" + portRNV);
+            //client_rnv.connect("tcp://25.92.125.22:" + port);
+            client_rnv.subscribe(filter.getBytes(Charset.forName("UTF-8")));
+            
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
             System.exit(-1);
@@ -42,7 +63,7 @@ public class GestorBD {
     public void leerCambios(){ 
         try{
             while(!Thread.currentThread().isInterrupted()){
-                String peticionStr = client.recvStr(0).trim();
+                String peticionStr = client_dev.recvStr(0).trim();
                 // Separa la palabra por espacios
                 StringTokenizer strTok = new StringTokenizer(peticionStr, " ");
                 //Se obtiene topico

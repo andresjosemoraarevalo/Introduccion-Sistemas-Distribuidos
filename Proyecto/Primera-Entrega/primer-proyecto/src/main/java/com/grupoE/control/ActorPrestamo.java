@@ -1,5 +1,6 @@
 package com.grupoE.control;
 
+import java.time.format.DateTimeFormatter;
 import java.util.StringTokenizer;
 
 import com.grupoE.entity.Peticion;
@@ -11,6 +12,7 @@ import org.zeromq.ZMQ;
 public class ActorPrestamo {
     private ZContext context;
     private ZMQ.Socket server;
+    private ZMQ.Socket publisher;
 
     public ActorPrestamo(String opcion){
         try{
@@ -32,8 +34,16 @@ public class ActorPrestamo {
             //Ata el socket a el puerto
             //Usando localhost
             server.bind("tcp://"+ direccion + ":" + port);
-            
             //client.connect("tcp://25.92.125.22:" + port);
+            
+            //Crea socket tipo PUB
+            publisher = context.createSocket(SocketType.PUB);
+            int portPUB = 9996;
+            //Ata el socket a el puerto
+            //Usando el localhost abre el puerto TCP para todas las interfaces disponibles
+            publisher.bind("tcp://*:" + portPUB); 
+            //Usando hamachi
+            //publisher.bind("tcp://25.93.151.39:"+portPUB);
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
             System.exit(-1);
@@ -76,11 +86,24 @@ public class ActorPrestamo {
                 server.send(msgSend);
                 Thread.sleep(1000);
                 //Recibe la respuesta del gestor de carga
-                System.out.println(msgSend);
+                publicarRespuesta(peticionAux, tipo);
             }
         } catch (Exception e ){
             System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
             System.exit(-1);
         }
+    }
+    private void publicarRespuesta(Peticion peticion, int topico){
+        String msgSend = crearMensajePeticion(peticion);
+        publisher.send(topico + " " + msgSend);
+    }
+    private String crearMensajePeticion(Peticion peticion){
+        // Da formato a la fecha
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy"); 
+        // Obtiene la fecha de la petición y le da formato
+        String date = peticion.getFecha().format(dateFormat).toString();
+        // Arma el mensaje que se va a enviar
+        String msgSend = String.format("%s %s %s",peticion.getIdLibro(), peticion.getTipo().getNumSolicitud(),date);
+        return msgSend;
     }
 }   

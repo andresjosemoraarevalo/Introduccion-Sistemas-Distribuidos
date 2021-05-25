@@ -47,16 +47,7 @@ public class ActorDevolucion {
             publisher.bind("tcp://*:" + portPUB); 
             //Usando hamachi
             //publisher.bind("tcp://25.93.151.39:"+portPUB);
-
-            /*
-            //Crea socket tipo PUB
-            localPublisher = context.createSocket(SocketType.PUB);
-            //Ata el socket a el puerto
-            //Usando el localhost abre el puerto TCP para todas las interfaces disponibles
-            localPublisher.bind("tcp://"+ direccionOpuesta + ":" + portPUB); 
-            //Usando hamachi
-            //publisher.bind("tcp://25.93.151.39:"+portPUB);
-            */
+            
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
             System.exit(-1);
