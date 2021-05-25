@@ -16,8 +16,18 @@ public class GestorBD {
     public static ZMQ.Socket client_rnv;
     
 
-    public GestorBD(){
+    public GestorBD(String opcion){
         try{
+            String direccion;
+            if(opcion.equals("A")){
+                //Usando Hamachi A
+                direccion = "25.92.125.22";
+            }else if(opcion.equals("B")){
+                //Usando Hamachi B
+                direccion = "25.96.193.211";
+            }else{
+                direccion = opcion;
+            }
             //Se establece un contexto ZeroMQ
             context= new ZContext();
             //Crea socket tipo SUB
@@ -25,7 +35,7 @@ public class GestorBD {
             int portDEV = 8886;
             //Ata el socket a el puerto
             //Usando localhost
-            client_dev.connect("tcp://25.92.125.22:" + portDEV);
+            client_dev.connect("tcp://"+ direccion + ":" + portDEV);
             //client_dev.connect("tcp://25.92.125.22:" + port);
             String filter = "1";
             client_dev.subscribe(filter.getBytes(Charset.forName("UTF-8")));
@@ -35,7 +45,7 @@ public class GestorBD {
             int portPRES = 9996;
             //Ata el socket a el puerto
             //Usando localhost
-            client_pres.connect("tcp://25.92.125.22:" + portPRES);
+            client_pres.connect("tcp://"+ direccion + ":" + portPRES);
             //client_pres.connect("tcp://25.92.125.22:" + port);
             filter = "3";
             client_pres.subscribe(filter.getBytes(Charset.forName("UTF-8")));
@@ -45,7 +55,7 @@ public class GestorBD {
             int portRNV = 9886;
             //Ata el socket a el puerto
             //Usando localhost
-            client_rnv.connect("tcp://25.92.125.22:" + portRNV);
+            client_rnv.connect("tcp://"+ direccion + ":" + portRNV);
             filter = "2";
             //client_rnv.connect("tcp://25.92.125.22:" + port);
             client_rnv.subscribe(filter.getBytes(Charset.forName("UTF-8")));
@@ -56,9 +66,14 @@ public class GestorBD {
         }
     }
     public static void main(String[] args) {
+        if(args.length==0){ // Verifica que se ingrese los argumentos correctos
+            System.out.println("Ingrese: java [path] [sede]");
+            System.out.println("La sede puede ser A, B o la que desee (XXX.XXX.XXXX.XXXX)");
+            System.exit(-1);
+        }
         System.out.println("Conectando al servidor...");
         // Se crea el contexto, el socket y se ata a un puerto
-        GestorBD ar = new GestorBD();
+        GestorBD ar = new GestorBD(args[0]);
         // Envia las peticiones al servidor con el patrón requesr-reply
         ar.leerCambios();
     }
