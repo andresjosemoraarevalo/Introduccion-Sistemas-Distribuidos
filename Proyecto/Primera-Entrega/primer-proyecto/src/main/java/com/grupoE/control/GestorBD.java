@@ -11,9 +11,9 @@ import org.zeromq.ZMQ;
 
 public class GestorBD {
     private ZContext context;
-    private ZMQ.Socket client_dev;
-    private ZMQ.Socket client_pres;
-    private ZMQ.Socket client_rnv;
+    public static ZMQ.Socket client_dev;
+    public static ZMQ.Socket client_pres;
+    public static ZMQ.Socket client_rnv;
     
 
     public GestorBD(){
@@ -25,7 +25,7 @@ public class GestorBD {
             int portDEV = 8886;
             //Ata el socket a el puerto
             //Usando localhost
-            client_dev.connect("tcp://*:" + portDEV);
+            client_dev.connect("tcp://25.92.125.22:" + portDEV);
             //client_dev.connect("tcp://25.92.125.22:" + port);
             String filter = "1";
             client_dev.subscribe(filter.getBytes(Charset.forName("UTF-8")));
@@ -35,8 +35,9 @@ public class GestorBD {
             int portPRES = 9996;
             //Ata el socket a el puerto
             //Usando localhost
-            client_pres.connect("tcp://*:" + portPRES);
+            client_pres.connect("tcp://25.92.125.22:" + portPRES);
             //client_pres.connect("tcp://25.92.125.22:" + port);
+            filter = "3";
             client_pres.subscribe(filter.getBytes(Charset.forName("UTF-8")));
         
             //Crea socket tipo SUB
@@ -44,7 +45,8 @@ public class GestorBD {
             int portRNV = 9886;
             //Ata el socket a el puerto
             //Usando localhost
-            client_rnv.connect("tcp://*:" + portRNV);
+            client_rnv.connect("tcp://25.92.125.22:" + portRNV);
+            filter = "2";
             //client_rnv.connect("tcp://25.92.125.22:" + port);
             client_rnv.subscribe(filter.getBytes(Charset.forName("UTF-8")));
             
@@ -62,26 +64,93 @@ public class GestorBD {
     }
     public void leerCambios(){ 
         try{
-            while(!Thread.currentThread().isInterrupted()){
-                String peticionStr = client_dev.recvStr(0).trim();
-                // Separa la palabra por espacios
-                StringTokenizer strTok = new StringTokenizer(peticionStr, " ");
-                //Se obtiene topico
-                Integer.parseInt(strTok.nextToken());
-                // Se obtiene el ID del libro
-                int idLibro = Integer.parseInt(strTok.nextToken());
-                // Se obtiene el tipo de proceso
-                int tipo = Integer.parseInt(strTok.nextToken());
-                // Se obtiene la fecha del proceso
-                String fecha = strTok.nextToken();
-                //Se arma la petición
-                Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
-                //Se muestra en consola para saber en cual petición va
-                System.out.println("BD"+peticionAux.toString());
-            }
+            Thread hilo = new MsgDevolucion("proceso 1");
+            Thread hilo2 = new MsgPrestamo("proceso 2");
+            Thread hilo3 = new MsgRenovacion("proceso 2");
+            
+            hilo.start();
+            hilo2.start();
+            hilo3.start();
+
         } catch (Exception e){
             System.err.println("No se pudo recibir el mensaje" + e.getMessage());
             System.exit(-1);
+        }
+    }
+}
+
+class MsgDevolucion extends Thread{
+    public MsgDevolucion(String msg){
+        super(msg);
+    }
+    public void run(){
+        while(true){
+            String str_dev = GestorBD.client_dev.recvStr(0).trim();
+            String peticionStr = str_dev;
+            // Separa la palabra por espacios
+            StringTokenizer strTok = new StringTokenizer(peticionStr, " ");
+            //Se obtiene topico
+            Integer.parseInt(strTok.nextToken());
+            // Se obtiene el ID del libro
+            int idLibro = Integer.parseInt(strTok.nextToken());
+            // Se obtiene el tipo de proceso
+            int tipo = Integer.parseInt(strTok.nextToken());
+            // Se obtiene la fecha del proceso
+            String fecha = strTok.nextToken();
+            //Se arma la petición
+            Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
+            //Se muestra en consola para saber en cual petición va
+            System.out.println("BD"+peticionAux.toString());
+        }
+    }
+}
+class MsgPrestamo extends Thread{
+    public MsgPrestamo(String msg){
+        super(msg);
+    }
+    public void run(){
+        while(true){
+            String str_pres = GestorBD.client_pres.recvStr(0).trim();
+            String peticionStr = str_pres;
+            // Separa la palabra por espacios
+            StringTokenizer strTok = new StringTokenizer(peticionStr, " ");
+            //Se obtiene topico
+            Integer.parseInt(strTok.nextToken());
+            // Se obtiene el ID del libro
+            int idLibro = Integer.parseInt(strTok.nextToken());
+            // Se obtiene el tipo de proceso
+            int tipo = Integer.parseInt(strTok.nextToken());
+            // Se obtiene la fecha del proceso
+            String fecha = strTok.nextToken();
+            //Se arma la petición
+            Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
+            //Se muestra en consola para saber en cual petición va
+            System.out.println("BD"+peticionAux.toString());
+        }
+    }
+}
+class MsgRenovacion extends Thread{
+    public MsgRenovacion(String msg){
+        super(msg);
+    }
+    public void run(){
+        while(true){
+            String str_rnv = GestorBD.client_rnv.recvStr(0).trim();
+            String peticionStr = str_rnv;
+            // Separa la palabra por espacios
+            StringTokenizer strTok = new StringTokenizer(peticionStr, " ");
+            //Se obtiene topico
+            Integer.parseInt(strTok.nextToken());
+            // Se obtiene el ID del libro
+            int idLibro = Integer.parseInt(strTok.nextToken());
+            // Se obtiene el tipo de proceso
+            int tipo = Integer.parseInt(strTok.nextToken());
+            // Se obtiene la fecha del proceso
+            String fecha = strTok.nextToken();
+            //Se arma la petición
+            Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
+            //Se muestra en consola para saber en cual petición va
+            System.out.println("BD"+peticionAux.toString());
         }
     }
 }
