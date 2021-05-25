@@ -1,9 +1,20 @@
 package com.grupoE.control;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.grupoE.entity.Peticion;
+import com.grupoE.entity.Libro;
 
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
@@ -14,7 +25,8 @@ public class GestorBD {
     public static ZMQ.Socket client_dev;
     public static ZMQ.Socket client_pres;
     public static ZMQ.Socket client_rnv;
-    
+    private HashMap<Integer,Libro> libros = new HashMap<>();
+    private BufferedReader br;
 
     public GestorBD(String opcion){
         try{
@@ -76,6 +88,8 @@ public class GestorBD {
         GestorBD ar = new GestorBD(args[0]);
         // Envia las peticiones al servidor con el patrón requesr-reply
         ar.leerCambios();
+        ar.cargarLibros();
+        ar.persistirLibros();
     }
     public void leerCambios(){ 
         try{
@@ -90,6 +104,53 @@ public class GestorBD {
         } catch (Exception e){
             System.err.println("No se pudo recibir el mensaje" + e.getMessage());
             System.exit(-1);
+        }
+    }
+    public void cargarLibros(){
+        String actual = System.getProperty("user.dir");
+        //SE DEBE CAMBIAR DEPENDIENDO SI ES WINDOWS O LINUX
+        // - PARA LINUX
+        //String PATH_CSV = actual+"/Primera-Entrega/primer-proyecto/src/DB/libros.csv"; // Si se va a leer peticiones
+        String PATH_CSV = actual+"/Primera-Entrega/primer-proyecto/src/DB/libros.csv"; // Si se va a leer peticiones 2
+        // - PARA WINDOWS
+        //PATH_CSV.replace('/', '\\'); // QUITAR COMENTARIO
+        String line = "";
+        try{
+            br = new BufferedReader(new FileReader(PATH_CSV));//se lee el archivo
+            while((line = br.readLine()) != null){
+                String[] peticionR = line.split(","); // Se separa la linea por comas
+                Libro l = new Libro();
+                l.setIdLibro(Integer.parseInt(peticionR[0].replace(" ", "")));
+                l.setTitulo(peticionR[1].replace(" ", ""));
+                l.setAutor(peticionR[2].replace(" ", ""));
+                l.setISBN(peticionR[3].replace(" ", ""));
+                l.setEditorial(peticionR[4].replace(" ", ""));
+                l.setIdioma(peticionR[5].replace(" ", ""));
+                // Da formato a la fecha
+                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy"); 
+                // Obtiene la fecha de la petición y le da formato
+                l.setCategoria(peticionR[6].replace(" ", ""));
+                l.setEstado(Boolean.valueOf(peticionR[7].replace(" ", "")));
+                l.setNumEjemplares(Integer.parseInt(peticionR[8].replace(" ", "")));
+                l.setFechaPublicacion(LocalDate.parse(peticionR[9].replace(" ", ""), dateFormat));
+                libros.put(l.getIdLibro(), l);
+            }
+        }catch(IOException e){
+            System.err.println("No se pudo leer el archivo :(" + "\n" + e.getMessage());
+            System.exit(-1);
+        }
+    }
+    public void persistirLibros(){
+        String actual = System.getProperty("user.dir");
+        try (PrintWriter writer = new PrintWriter(new File(actual+"/Primera-Entrega/primer-proyecto/src/DB/libros.csv"))) {
+            StringBuilder sb = new StringBuilder();
+            for (Integer n : libros.keySet()) {
+                sb.append(libros.get(n).toString());
+                sb.append('\n');
+            }
+            writer.write(sb.toString());
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

@@ -1,12 +1,13 @@
 package com.grupoE.entity;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 public class Libro {
     private int idLibro;
     private String titulo;
     private String autor;
-    private long ISBN;
+    private String ISBN;
     private String editorial;
     private LocalDate fechaPublicacion;
     private String idioma;
@@ -44,20 +45,21 @@ public class Libro {
     /**
      * @return long return the ISBN
      */
-    public long getISBN() {
+    public String getISBN() {
         return ISBN;
     }
 
     /**
      * @param ISBN the ISBN to set
      */
-    public void setISBN(long ISBN) {
+    public void setISBN(String ISBN) {
         this.ISBN = ISBN;
     }
 
     @Override
     public String toString(){
-        return "Titulo: "+ this.titulo + "\t Autor: "+this.autor + "\t ISBN: " + this.ISBN + "\n";
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MMMM/yyyy"); 
+        return this.idLibro +","+ this.titulo+"," + this.autor + "," + this.ISBN + "," + this.editorial + ","  + this.idioma + "," + this.categoria + "," + this.estado + "," + this.numEjemplares + "," + this.fechaPublicacion.format(dateFormat).toString();
     }
 
     /**
@@ -168,5 +170,13 @@ public class Libro {
     public void setNumEjemplares(int numEjemplares) {
         this.numEjemplares = numEjemplares;
     }
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public boolean getEstado() {
+        return this.estado;
+    }
+
 
 }
