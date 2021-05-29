@@ -70,7 +70,7 @@ public class ProcesoSolicitante {
             String msgSend = String.format("%s %s %s",peticion.getIdLibro(), peticion.getTipo().getNumSolicitud(), date);
             //Se envía el mensaje
             client.send(msgSend);
-            Thread.sleep(1000);
+            System.out.println(System.currentTimeMillis());
             //Recibe la respuesta del gestor de carga
             String message = client.recvStr(0).trim();
             System.out.println(message);

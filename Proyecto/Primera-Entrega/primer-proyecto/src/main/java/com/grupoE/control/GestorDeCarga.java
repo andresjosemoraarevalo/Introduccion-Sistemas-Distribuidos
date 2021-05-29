@@ -93,7 +93,7 @@ public class GestorDeCarga {
                 Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
                 //Se muestra en consola para saber en cual petición va
                 System.out.println(peticionAux.toString());
-                Thread.sleep(1000);
+                 
                 //Se procesa y se envía la petición hacia el proceso solicitante
                 serverPS.send(this.procesarPeticion(peticionAux));
             }
@@ -128,7 +128,7 @@ public class GestorDeCarga {
             String msgSend = crearMensajePeticion(peticion);
             clientAP.send(msgSend);
             prestamoStr = clientAP.recvStr(0).trim();
-            Thread.sleep(1000);
+             
             //Recibe la respuesta del gestor de carga
             System.out.println(prestamoStr);
         } catch (Exception e){

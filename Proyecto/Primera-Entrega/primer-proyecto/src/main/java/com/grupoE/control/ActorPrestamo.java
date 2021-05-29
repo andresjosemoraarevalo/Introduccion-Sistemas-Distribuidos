@@ -112,7 +112,7 @@ public class ActorPrestamo {
                 //}
                 //Se envía el mensaje
                 server.send("true");
-                Thread.sleep(1000);
+                 
                 //Recibe la respuesta del gestor de carga
                 publicarRespuesta(peticionAux, 3);
             }

@@ -238,7 +238,9 @@ class MsgDevolucion extends Thread{
             Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
             //Se muestra en consola para saber en cual petición va
             System.out.println("BD"+peticionAux.toString());
+            System.out.println(System.currentTimeMillis());
         }
+        
     }
 }
 class MsgPrestamo extends Thread{
@@ -263,6 +265,7 @@ class MsgPrestamo extends Thread{
             Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
             //Se muestra en consola para saber en cual petición va
             System.out.println("BD"+peticionAux.toString());
+            System.out.println(System.currentTimeMillis());
         }
     }
 }
@@ -288,6 +291,7 @@ class MsgRenovacion extends Thread{
             Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
             //Se muestra en consola para saber en cual petición va
             System.out.println("BD"+peticionAux.toString());
+            System.out.println(System.currentTimeMillis());
         }
     }
 }
@@ -313,6 +317,7 @@ class MsgDevolucionL extends Thread{
             Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
             //Se muestra en consola para saber en cual petición va
             System.out.println("BD"+peticionAux.toString());
+            System.out.println(System.currentTimeMillis());
         }
     }
 }
@@ -338,6 +343,7 @@ class MsgPrestamoL extends Thread{
             Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
             //Se muestra en consola para saber en cual petición va
             System.out.println("BD"+peticionAux.toString());
+            System.out.println(System.currentTimeMillis());
         }
     }
 }
@@ -363,6 +369,7 @@ class MsgRenovacionL extends Thread{
             Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
             //Se muestra en consola para saber en cual petición va
             System.out.println("BD"+peticionAux.toString());
+            System.out.println(System.currentTimeMillis());
         }
     }
 }
@@ -389,6 +396,7 @@ class GestPrestamoL extends Thread{
             //Se muestra en consola para saber en cual petición va
             System.out.println("BD"+peticionAux.toString());
             GestorBD.client_pres_local.send("true");
+            System.out.println(System.currentTimeMillis());
         }
     }
 }
@@ -415,6 +423,7 @@ class GestPrestamo extends Thread{
             //Se muestra en consola para saber en cual petición va
             System.out.println("BD"+peticionAux.toString());
             GestorBD.client_pres.send("true");
+            System.out.println(System.currentTimeMillis());
         }
     }
 }
