@@ -105,16 +105,16 @@ public class ActorPrestamo {
                 Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
                 //Se muestra en consola para saber en cual petición va
                 System.out.println("Actor Prestamo"+peticionAux.toString());
-                int dispo = verificarDisponibilidad(peticionAux);
+                //int dispo = verificarDisponibilidad(peticionAux);
                 String msgSend = "false"; 
-                if (dispo!= -1){
-                    msgSend = "true";
-                }
+                //if (dispo!= -1){
+                //    msgSend = "true";
+                //}
                 //Se envía el mensaje
-                server.send(msgSend);
+                server.send("true");
                 Thread.sleep(1000);
                 //Recibe la respuesta del gestor de carga
-                publicarRespuesta(peticionAux, dispo);
+                publicarRespuesta(peticionAux, 3);
             }
         } catch (Exception e ){
             System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
