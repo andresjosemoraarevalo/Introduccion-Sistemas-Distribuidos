@@ -29,7 +29,7 @@ public class ActorRenovacion {
             }
             //Se establece un contexto ZeroMQ
             context= new ZContext();
-            //Crea socket tipo SUB
+            //Crea socket tipo SUB 
             client = context.createSocket(SocketType.SUB);
             int port = 7776;
             //Ata el socket a el puerto

@@ -11,7 +11,7 @@ import org.zeromq.ZMQ;
 
 public class ActorPrestamo {
     private ZContext context;
-    private ZMQ.Socket server;
+    private ZMQ.Socket server; 
     private ZMQ.Socket serverBD_local;
     private ZMQ.Socket serverBD_rep;
     private ZMQ.Socket publisher;

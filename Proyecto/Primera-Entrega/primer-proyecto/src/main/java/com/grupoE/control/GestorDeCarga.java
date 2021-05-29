@@ -40,7 +40,7 @@ public class GestorDeCarga {
             //serverPS.bind("tcp://25.93.151.39:"+portPS);
 
             //Crea socket tipo REQ
-            clientAP = context.createSocket(SocketType.REQ);
+            clientAP = context.createSocket(SocketType.REQ); 
             int portAP = 6666;
             //Ata el socket a el puerto
             //Usando el localhost abre el puerto TCP para todas las interfaces disponibles

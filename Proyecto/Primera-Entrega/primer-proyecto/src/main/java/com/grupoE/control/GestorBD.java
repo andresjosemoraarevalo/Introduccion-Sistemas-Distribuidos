@@ -37,7 +37,7 @@ public class GestorBD {
         try{
             String direccion;
             if(opcion.equals("A")){
-                //Usando Hamachi A
+                //Usando Hamachi A 
                 direccion = "25.92.125.22";
             }else if(opcion.equals("B")){
                 //Usando Hamachi B
