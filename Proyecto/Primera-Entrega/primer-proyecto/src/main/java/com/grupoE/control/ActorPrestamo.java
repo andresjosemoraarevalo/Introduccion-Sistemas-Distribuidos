@@ -16,6 +16,7 @@ public class ActorPrestamo {
     private ZMQ.Socket serverBD_rep;
     private ZMQ.Socket publisher;
     
+    
     public ActorPrestamo(String usrDir){
         try{
             String direccion;
@@ -124,23 +125,29 @@ public class ActorPrestamo {
     private int verificarDisponibilidad(Peticion peticion){
         try{
             String msgSend = crearMensajePeticion(peticion);  
+            System.out.println("etro");
             serverBD_local.send(msgSend);
             String peticionStr = "";
-            while(!Thread.currentThread().isInterrupted()){
+            System.out.println("etro");
+            while(true){
+                System.out.println(peticionStr);
                 peticionStr = serverBD_local.recvStr(0).trim(); 
-            }
-            if(peticionStr.equals("false")){
-                serverBD_rep.send(msgSend);
-                while(!Thread.currentThread().isInterrupted()){
-                    peticionStr = serverBD_rep.recvStr(0).trim(); 
-                }
                 if(peticionStr.equals("false")){
-                    return -1;
+                    serverBD_rep.send(msgSend);
+                    while(true){
+                        peticionStr = serverBD_rep.recvStr(0).trim(); 
+                        if(peticionStr.equals("false")){
+                            return -1;
+                        }
+                        if(peticionStr.equals("true")){
+                            return 4;
+                        }
+                    }
                 }
-                return 3;
-            }else{
-                return 4;
-            } 
+                if(peticionStr.equals("true")){
+                    return 3;
+                }
+            }
         }catch (Exception e ){
             System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
             System.exit(-1);

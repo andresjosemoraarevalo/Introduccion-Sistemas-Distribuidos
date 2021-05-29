@@ -145,12 +145,12 @@ public class GestorBD {
             Thread hilo = new MsgDevolucion("BDExternaDev");
             Thread hilo2 = new MsgPrestamo("BDExternaPres");
             Thread hilo3 = new MsgRenovacion("BDExternaRnv");
-            Thread hilo4 = new MsgRenovacion("BDExternaRnv");
+            Thread hilo4 = new GestPrestamo("BDPresExt");
             
             Thread hilo_local = new MsgDevolucionL("BDLocalDev");
             Thread hilo2_local = new MsgPrestamoL("BDLocalPres");
             Thread hilo3_local = new MsgRenovacionL("BDLocalRnv");
-            Thread hilo4_local = new GestPrestamoL("BDLocalRnv");
+            Thread hilo4_local = new GestPrestamoL("BDPresL");
             
 
             hilo.start();
