@@ -89,7 +89,7 @@ public class ProcesoSolicitante {
         //SE DEBE CAMBIAR DEPENDIENDO SI ES WINDOWS O LINUX
         // - PARA LINUX
         //String PATH_CSV = actual+"/src/main/java/com/grupoE/peticiones/peticiones.csv"; // Si se va a leer peticiones
-        String PATH_CSV = actual+"/Primera-Entrega/primer-proyecto/src/main/java/com/grupoE/peticiones/peticiones_2.csv"; // Si se va a leer peticiones 2
+        String PATH_CSV = actual+"/primer-proyecto/src/main/java/com/grupoE/peticiones/peticiones_2.csv"; // Si se va a leer peticiones 2
         // - PARA WINDOWS
         //PATH_CSV.replace('/', '\\'); // QUITAR COMENTARIO
         String line = "";

@@ -23,7 +23,7 @@ public class GestorDeCarga {
                 direccion = "25.92.125.22";
             }else if(opcion.equals("B")){
                 //Usando Hamachi B
-                direccion = "25.96.193.211";
+                direccion = "25.104.197.200";
             }else{
                 direccion = opcion;
             }
@@ -117,12 +117,12 @@ public class GestorDeCarga {
             publicarRespuesta(p,2);
             return "Nueva fecha de entrega " + p.getFecha().plusDays(7).format(dateFormat);
         }else if(p.getTipo().getNumSolicitud() == 3){
-            return procesarDevolucion(p);
+            return procesarPrestamo(p);
         }
         return null;
     }
 
-    private String procesarDevolucion(Peticion peticion){
+    private String procesarPrestamo(Peticion peticion){
         String prestamoStr = "";
         try{
             String msgSend = crearMensajePeticion(peticion);

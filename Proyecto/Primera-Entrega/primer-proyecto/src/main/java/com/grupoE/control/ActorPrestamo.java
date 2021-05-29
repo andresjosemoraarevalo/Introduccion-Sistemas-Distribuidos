@@ -12,19 +12,25 @@ import org.zeromq.ZMQ;
 public class ActorPrestamo {
     private ZContext context;
     private ZMQ.Socket server;
+    private ZMQ.Socket serverBD_local;
+    private ZMQ.Socket serverBD_rep;
     private ZMQ.Socket publisher;
-
-    public ActorPrestamo(String opcion){
+    
+    public ActorPrestamo(String usrDir){
         try{
             String direccion;
-            if(opcion.equals("A")){
+            String direccion_repl;
+            if(usrDir.equals("A")){
                 //Usando Hamachi A
                 direccion = "25.92.125.22";
-            }else if(opcion.equals("B")){
+                direccion_repl = "25.96.193.211";;
+            }else if(usrDir.equals("B")){
                 //Usando Hamachi B
                 direccion = "25.96.193.211";
+                direccion_repl = "25.92.125.22";
             }else{
-                direccion = opcion;
+                direccion = "localhost";
+                direccion_repl = usrDir;
             }
             //Se establece un contexto ZeroMQ
             context= new ZContext();
@@ -36,14 +42,31 @@ public class ActorPrestamo {
             server.bind("tcp://"+ direccion + ":" + port);
             //client.connect("tcp://25.92.125.22:" + port);
             
+            //Crea socket tipo REQ
+            serverBD_local = context.createSocket(SocketType.REQ);
+            int portBD_local = 8889;
+            //Ata el socket a el puerto
+            //Usando localhost
+            server.connect("tcp://"+ direccion + ":" + portBD_local);
+            //client.connect("tcp://25.92.125.22:" + portBD_local);
+
+            //Crea socket tipo REQ
+            serverBD_rep = context.createSocket(SocketType.REQ);
+            int portBD_rep = 8888;
+            //Ata el socket a el puerto
+            //Usando localhost
+            server.connect("tcp://"+ direccion_repl + ":" + portBD_rep);
+            //client.connect("tcp://25.92.125.22:" + port);
+
             //Crea socket tipo PUB
             publisher = context.createSocket(SocketType.PUB);
-            int portPUB = 9996;
+            int portPUB = 8887;
             //Ata el socket a el puerto
             //Usando el localhost abre el puerto TCP para todas las interfaces disponibles
             publisher.bind("tcp://*:" + portPUB); 
             //Usando hamachi
             //publisher.bind("tcp://25.93.151.39:"+portPUB);
+
         } catch (Exception e) {
             System.err.println("No se pudo conectar al servidor" + "\n" + e.getMessage());
             System.exit(-1);
@@ -81,17 +104,48 @@ public class ActorPrestamo {
                 Peticion peticionAux = new Peticion(idLibro,tipo,fecha);
                 //Se muestra en consola para saber en cual petición va
                 System.out.println("Actor Prestamo"+peticionAux.toString());
-                String msgSend = "True"; 
+                int dispo = verificarDisponibilidad(peticionAux);
+                String msgSend = "false"; 
+                if (dispo!= -1){
+                    msgSend = "true";
+                }
                 //Se envía el mensaje
                 server.send(msgSend);
                 Thread.sleep(1000);
                 //Recibe la respuesta del gestor de carga
-                publicarRespuesta(peticionAux, tipo);
+                publicarRespuesta(peticionAux, dispo);
             }
         } catch (Exception e ){
             System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
             System.exit(-1);
         }
+    }
+
+    private int verificarDisponibilidad(Peticion peticion){
+        try{
+            String msgSend = crearMensajePeticion(peticion);  
+            serverBD_local.send(msgSend);
+            String peticionStr = "";
+            while(!Thread.currentThread().isInterrupted()){
+                peticionStr = serverBD_local.recvStr(0).trim(); 
+            }
+            if(peticionStr.equals("false")){
+                serverBD_rep.send(msgSend);
+                while(!Thread.currentThread().isInterrupted()){
+                    peticionStr = serverBD_rep.recvStr(0).trim(); 
+                }
+                if(peticionStr.equals("false")){
+                    return -1;
+                }
+                return 3;
+            }else{
+                return 4;
+            } 
+        }catch (Exception e ){
+            System.err.println("No se pudieron enviar las peticiones" + "\n" + e.getMessage());
+            System.exit(-1);
+        }
+        return -1;
     }
     private void publicarRespuesta(Peticion peticion, int topico){
         String msgSend = crearMensajePeticion(peticion);
